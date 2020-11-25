@@ -6,6 +6,8 @@
 #include <string.h>
 #include "http_parser.h"
 #include <unistd.h>
+#include <pthread.h>
+
 /* Recommended max cache and object sizes */
 #define MAX_CACHE_SIZE 1049000
 #define MAX_OBJECT_SIZE 102400
@@ -30,7 +32,9 @@ int read_fs(int fd, char * buf, int size, int client_or_server)
 	while(1)
 	{
 		nread = read(fd, &buf[current_size], size);
-		current_size += nread; 
+		current_size += nread;
+
+		//printf("bytes read: %d\n", nread); 
 		if(nread == -1)
 		{
 			fprintf(stderr, "Read error\n");
@@ -40,6 +44,7 @@ int read_fs(int fd, char * buf, int size, int client_or_server)
 		{
 			if (strstr(buf, "\r\n\r\n") != NULL)
 			{
+				//printf("total bytes read: %d\n", current_size); 
 				return current_size;
 			} 
 		}
@@ -93,7 +98,8 @@ int read_and_parse_request(int connfd, char * out_head, char * host, char * port
 	{
 		exit(-1);	
 	}	
-		
+	
+	//printf("%s\n", buf);	
 	if(!is_complete_request(buf))
 	{
 		fprintf(stderr, "invalid format header\n");
@@ -107,12 +113,13 @@ int read_and_parse_request(int connfd, char * out_head, char * host, char * port
 		exit(-1);
 	}
 	
+	
 	strcpy(host, r_host);
 	strcpy(port, r_port);
 
 	int len = 0;
-	char * out_head_track = out_head;
-	len += sprintf(out_head_track,"%s /%s HTTP/1.0 \r\n", method, uri);
+	char * out_head_track = out_head;	
+	len += sprintf(out_head_track,"%s /%s HTTP/1.0\r\n", method, uri);
 	out_head_track = out_head + len;
 	len += sprintf(out_head_track,"Host: %s:%s\r\n", r_host, r_port);
 	out_head_track = out_head + len;
@@ -183,8 +190,7 @@ int forward_request(char * request, int len, char * answer, char * port, char * 
 	write_fs(sfd, request, len);
 
 	//read answer	
-	int total_bytes = read_fs(sfd, answer, MAX_OBJECT_SIZE, 1);
-	printf("this read failed fd: %d\n", sfd);	
+	int total_bytes = read_fs(sfd, answer, MAX_OBJECT_SIZE, 1);	
 	close(sfd);
 	return total_bytes;
 			
@@ -222,8 +228,23 @@ int establish_initial_connection(struct sockaddr_in ip4addr)
 
 void *thread(void *fd)
 {
+	char host[100];
+	char r_port[100];
+	char request[1000];
+	char answer[MAX_OBJECT_SIZE];
+	int connfd = *((int *) fd);
+	pthread_detach(pthread_self());
+	free(fd);
 
+	//1. Read and parse the request	
+	int len = read_and_parse_request(connfd, request, host, r_port);
 
+	//printf("%s",request);	
+	//2. Forward request`
+	int total_bytes = forward_request(request, len, answer, r_port, host);
+	write_fs(connfd, answer, total_bytes);
+	close(connfd);
+	return NULL;
 }
 
 int main(int argc, char **argv)
@@ -235,16 +256,12 @@ int main(int argc, char **argv)
 		exit(0);
  	}
 	char * port = argv[1];
-	char request[1000];
-	char answer[MAX_OBJECT_SIZE];
-	char host[100];
-	char r_port[100];
 	int listenfd;
-	int connfd;
+	int * connfdp;
 	socklen_t clientlen;
 	struct sockaddr_in ip4addr;
 	struct sockaddr_storage clientaddr;
-	
+	pthread_t tid;	
 
 	//listen for incoming port connection on specified port	
 	ip4addr.sin_family = AF_INET;
@@ -252,21 +269,13 @@ int main(int argc, char **argv)
 	ip4addr.sin_addr.s_addr = INADDR_ANY;	
 
 	listenfd = establish_initial_connection(ip4addr);
-//close(listenfd);
 	
 	while(1)
 	{
 		clientlen = sizeof(struct sockaddr_storage);
-		connfd = accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
-	
-		//2. Read and parse request 
-		int len = read_and_parse_request(connfd, request, host, r_port);
-	   	
-		//3. Send forward request and get response
-		int total_bytes = forward_request(request, len, answer, r_port, host);
-	
-		write_fs(connfd, answer, total_bytes);
-		close(connfd);
+		connfdp = malloc(sizeof(int));
+		*connfdp = accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);		
+		//Spawning_new_thread
+		pthread_create(&tid, NULL, thread, connfdp);
 	}	
-    	exit(0);
 }

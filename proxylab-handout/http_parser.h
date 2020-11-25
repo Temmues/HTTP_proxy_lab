@@ -24,7 +24,7 @@ int is_complete_request(const char *request) {
 	{
 		return 0;
 	}
-	else if (strstr(request, "User-Agent:") == NULL)
+/*	else if (strstr(request, "User-Agent:") == NULL)
 	{
 		return 0;
 	}
@@ -32,6 +32,7 @@ int is_complete_request(const char *request) {
 	{
 		return 0;
 	}
+*/
 	return 1;
 }
 
@@ -52,9 +53,8 @@ int parse_request(const char *request, char *method,
 		char *hostname, char *port, char *uri, http_header *headers) {
 	char copy[HEADER_VALUE_MAX_SIZE];
 	char hostCopy[500];
-//	char head[200];
 	//copy request
-	strcpy(copy, request);
+	memcpy(copy, request, HEADER_VALUE_MAX_SIZE);
 
 	//Method
 	strcpy(method, strtok(copy, " "));
@@ -64,15 +64,17 @@ int parse_request(const char *request, char *method,
 	strtok(NULL, "/");
 	
 	//uri
-	strcpy(uri, strtok(NULL," "));
+	strcpy(uri, strtok(NULL,"H"));
 	
 	//end of line 1
 	strtok(NULL, "\n");
-	
-	//Parse line two
+
 	strtok(NULL, " ");
+
+	//Parse line two
 	strcpy(hostCopy, strtok(NULL, "\n"));
-	
+		
+
 	//Seperate host and port
 	if(strstr(hostCopy, ":") != NULL)
 	{
@@ -84,6 +86,7 @@ int parse_request(const char *request, char *method,
 		strcpy(hostname, hostCopy);
 		strcpy(port, "80");
 	}	
+
 	
 	//re-copy request
 	char reCopy[HEADER_VALUE_MAX_SIZE];

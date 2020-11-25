@@ -1,0 +1,6 @@
+==18432== Memcheck, a memory error detector
+==18432== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==18432== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==18432== Command: ./proxy 19204
+==18432== Parent PID: 18369
+==18432== 
