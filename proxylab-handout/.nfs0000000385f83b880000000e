@@ -1,0 +1,6 @@
+==27811== Memcheck, a memory error detector
+==27811== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==27811== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==27811== Command: ./proxy 14226
+==27811== Parent PID: 27748
+==27811== 

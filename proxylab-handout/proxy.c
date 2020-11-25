@@ -19,7 +19,10 @@ static const char *user_agent_hdr = "Mozilla/5.0 (X11; Linux x86_64; rv:10.0.3) 
 	Output: socket file descriptor
 */
 
-int read_fs(int fd, char * buf, int size)
+
+/* read from client or server into a buffer, 0 for client, 1 for server */
+
+int read_fs(int fd, char * buf, int size, int client_or_server)
 {
 	int current_size = 0;
 	int nread;
@@ -33,13 +36,21 @@ int read_fs(int fd, char * buf, int size)
 			fprintf(stderr, "Read error\n");
 			return -1;
 		}
-		else if (nread == 0)
+		if(client_or_server == 0)
+		{
+			if (strstr(buf, "\r\n\r\n") != NULL)
+			{
+				return current_size;
+			} 
+		}
+		else if(nread == 0)
 		{
 			return current_size;
 		}
 	}
 }
 
+/* writes to outward file descriptor */ 
 int write_fs(int fd, char * buf, int size)
 {
 	int total_written = 0;
@@ -53,7 +64,7 @@ int write_fs(int fd, char * buf, int size)
 
 		if(written == -1)
 		{
-			fprintf(stderr, "Read error\n");
+			fprintf(stderr, "write error\n");
 			return -1;
 		}
 		else if (written == 0)
@@ -62,80 +73,33 @@ int write_fs(int fd, char * buf, int size)
 		}
 	}
 
-
 }
-int make_socket_file_descriptor(char * port)
-{
-	int sfd;
-	int s;
-	int connfd;
-	struct addrinfo hints;
-	struct addrinfo * result;
-	socklen_t clientlen;
-	struct sockaddr_storage clientaddr;
-	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_INET6;
-	hints.ai_socktype = SOCK_STREAM; /*tcp connection*/
-	hints.ai_flags = AI_PASSIVE;
-	hints.ai_protocol = 0;
-	hints.ai_canonname = NULL;
-	hints.ai_addr = NULL;
-	hints.ai_next = NULL;	
-	
-	if((s = getaddrinfo(NULL, port, &hints, &result)) < 0) 
-	{
-		fprintf(stderr, "getaddrinfo failed: %s\n", gai_strerror(s));
-		exit(-1);
-	}
 
-	if((sfd = socket(result->ai_family, result->ai_socktype, result->ai_protocol)) < 0)
-	{
-		fprintf(stderr, "socket creation failed\n");
-		exit(-1);	
-	}
-		
-	if(bind(sfd, result->ai_addr, result->ai_addrlen) < 0) 
-	{
-		fprintf(stderr, "bind failed\n");
-		exit(-1);
-
-	}
-	freeaddrinfo(result);
-	listen(sfd, 100);
-	clientlen = sizeof(struct sockaddr_storage);
-	connfd = accept(sfd, (struct sockaddr *)&clientaddr, &clientlen);
-	close(sfd);
-	return connfd;
-}
 
 /*
-	reads, parses request into headers, modifies inpnut host, and returns suze oof parsed request.  
+	reads, parses request into headers, modifies input host, and returns size of parsed request.  
 */
 int read_and_parse_request(int connfd, char * out_head, char * host, char * port)
 {
-	
-//	struct sockaddr_storage peer_addr;
-
-//	socklen_t peer_addr_len;
 	int head_num;
 	http_header header[100];
 	char buf[500];
 	char method[10];
 	char r_port[100];
 	char uri[100];
-	char r_host[100];		
-	
-	if (read_fs(connfd, buf, 500) == -1)
+	char r_host[100];				
+
+	if (read_fs(connfd, buf, 500, 0) == -1)
 	{
 		exit(-1);	
 	}	
-	
-	printf("%s", buf);	
+		
 	if(!is_complete_request(buf))
 	{
 		fprintf(stderr, "invalid format header\n");
 		exit(-1);
 	}	
+
 	//parsing initial header
 	if((head_num = parse_request(buf, method, r_host, r_port, uri, header)) < 1)
 	{
@@ -158,7 +122,7 @@ int read_and_parse_request(int connfd, char * out_head, char * host, char * port
 		if((strcmp(name, "Host") != 0) && (strcmp(name, "User-Agent") != 0) && (strcmp(name, "Connection") != 0) && (strcmp(name, "Proxy-Connection") != 0))
 		{
 
-			len += sprintf(out_head_track, "%s: %s\n\r", name, header[i].value);
+			len += sprintf(out_head_track, "%s: %s\r\n", name, header[i].value);
 			out_head_track = out_head + len;
 
 		}
@@ -176,14 +140,12 @@ int read_and_parse_request(int connfd, char * out_head, char * host, char * port
 	return len;
 }
 
-
+/* forwards request to outward server, outputs size of server response stored in answer */
 int forward_request(char * request, int len, char * answer, char * port, char * host)
 {
 	struct addrinfo hints;
 	struct addrinfo *result, * rp;
 	int sfd, s;
-	
-	
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
@@ -221,18 +183,17 @@ int forward_request(char * request, int len, char * answer, char * port, char * 
 	write_fs(sfd, request, len);
 
 	//read answer	
-	int total_bytes = read_fs(sfd, answer, 1000);
-	
-	printf("%s\n", answer);
+	int total_bytes = read_fs(sfd, answer, MAX_OBJECT_SIZE, 1);
+	printf("this read failed fd: %d\n", sfd);	
 	close(sfd);
 	return total_bytes;
 			
 }
 
+/* sets up listening socket returns a file descriptor */
 int establish_initial_connection(struct sockaddr_in ip4addr)
 {
 	int listenfd;
-
 	//socket	
 	if((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
 	{
@@ -258,6 +219,13 @@ int establish_initial_connection(struct sockaddr_in ip4addr)
 	return listenfd; 	
 
 }
+
+void *thread(void *fd)
+{
+
+
+}
+
 int main(int argc, char **argv)
 {
 	
@@ -268,7 +236,7 @@ int main(int argc, char **argv)
  	}
 	char * port = argv[1];
 	char request[1000];
-	char answer[1000];
+	char answer[MAX_OBJECT_SIZE];
 	char host[100];
 	char r_port[100];
 	int listenfd;
@@ -284,18 +252,21 @@ int main(int argc, char **argv)
 	ip4addr.sin_addr.s_addr = INADDR_ANY;	
 
 	listenfd = establish_initial_connection(ip4addr);
-	clientlen = sizeof(struct sockaddr_storage);
-	connfd = accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
-	close(listenfd);	
-		
-	//2. Read and parse request 
-	int len = read_and_parse_request(connfd, request, host, r_port);
-	   	
-	//3. Send forward request and get response
-	int total_bytes = forward_request(request, len, answer, r_port, host);
+//close(listenfd);
 	
-	printf("%s\n", answer);
-	write_fs(connfd, answer, total_bytes);
-	//close(connfd);	
-    	return 0;
+	while(1)
+	{
+		clientlen = sizeof(struct sockaddr_storage);
+		connfd = accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
+	
+		//2. Read and parse request 
+		int len = read_and_parse_request(connfd, request, host, r_port);
+	   	
+		//3. Send forward request and get response
+		int total_bytes = forward_request(request, len, answer, r_port, host);
+	
+		write_fs(connfd, answer, total_bytes);
+		close(connfd);
+	}	
+    	exit(0);
 }

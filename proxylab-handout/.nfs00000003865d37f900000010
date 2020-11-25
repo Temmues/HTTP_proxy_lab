@@ -1,0 +1,191 @@
+==30189== Memcheck, a memory error detector
+==30189== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==30189== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==30189== Command: ./proxy 7029
+==30189== Parent PID: 30123
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C34E08: strcpy (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A075: parse_request (http_parser.h:57)
+==30189==    by 0x10A592: read_and_parse_request (proxy.c:104)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C34E08: strcpy (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A1DE: parse_request (http_parser.h:90)
+==30189==    by 0x10A592: read_and_parse_request (proxy.c:104)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A6F3: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A6F3: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A711: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A711: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C34D08: strlen (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x50BA5D2: vfprintf (vfprintf.c:1643)
+==30189==    by 0x50DE7B0: vsprintf (iovsprintf.c:42)
+==30189==    by 0x50C2183: sprintf (sprintf.c:32)
+==30189==    by 0x10A799: read_and_parse_request (proxy.c:125)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A74D: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A74D: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C39928: strcspn (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x50FBA94: strtok_r (strtok_r.c:64)
+==30189==    by 0x10A20F: parse_request (http_parser.h:100)
+==30189==    by 0x10A592: read_and_parse_request (proxy.c:104)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C39908: strcspn (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x50FBA94: strtok_r (strtok_r.c:64)
+==30189==    by 0x10A20F: parse_request (http_parser.h:100)
+==30189==    by 0x10A592: read_and_parse_request (proxy.c:104)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Syscall param read(buf) points to unaddressable byte(s)
+==30189==    at 0x4E4F43E: read (read.c:27)
+==30189==    by 0x10A3D7: read_fs (proxy.c:32)
+==30189==    by 0x10AABE: forward_request (proxy.c:186)
+==30189==    by 0x10AD0B: main (proxy.c:260)
+==30189==  Address 0x1fff001000 is not stack'd, malloc'd or (recently) free'd
+==30189== 
+==30189== Syscall param write(buf) points to unaddressable byte(s)
+==30189==    at 0x4E4F371: write (write.c:27)
+==30189==    by 0x10A474: write_fs (proxy.c:60)
+==30189==    by 0x10AD2E: main (proxy.c:262)
+==30189==  Address 0x1fff001000 is not stack'd, malloc'd or (recently) free'd
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A6F3: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A6F3: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A711: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A711: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A74D: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A74D: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Syscall param write(buf) points to unaddressable byte(s)
+==30189==    at 0x4E4F371: write (write.c:27)
+==30189==    by 0x10A474: write_fs (proxy.c:60)
+==30189==    by 0x10AD2E: main (proxy.c:262)
+==30189==  Address 0x1fff001000 is not stack'd, malloc'd or (recently) free'd
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A6F3: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A6F3: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A711: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A711: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A74D: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A74D: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Syscall param write(buf) points to unaddressable byte(s)
+==30189==    at 0x4E4F371: write (write.c:27)
+==30189==    by 0x10A474: write_fs (proxy.c:60)
+==30189==    by 0x10AD2E: main (proxy.c:262)
+==30189==  Address 0x1fff001000 is not stack'd, malloc'd or (recently) free'd
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A6F3: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A6F3: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A711: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A711: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DCC: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A74D: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Conditional jump or move depends on uninitialised value(s)
+==30189==    at 0x4C35DBA: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==30189==    by 0x10A74D: read_and_parse_request (proxy.c:122)
+==30189==    by 0x10ACD8: main (proxy.c:257)
+==30189== 
+==30189== Syscall param write(buf) points to unaddressable byte(s)
+==30189==    at 0x4E4F371: write (write.c:27)
+==30189==    by 0x10A474: write_fs (proxy.c:60)
+==30189==    by 0x10AD2E: main (proxy.c:262)
+==30189==  Address 0x1fff001000 is not stack'd, malloc'd or (recently) free'd
+==30189== 
